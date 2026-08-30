@@ -27,11 +27,49 @@ jobs:
       - name: Install dependencies (ImageMagick, jq, unzip, curl)
         run: sudo apt-get update && sudo apt-get install -y imagemagick jq unzip curl
 
+      # ---------- CACHING (mempercepat build berulang) ----------
+      # Tanpa cache ini, setiap build download ulang SEMUA dependency Gradle
+      # (AndroidX, Kotlin stdlib, AGP, dll) dan package pub dari internet dari
+      # nol setiap kali — inilah penyebab utama build 20-30 menit walau
+      # project yang sama pernah di-build sebelumnya. Pola "key unik per run +
+      # restore-keys prefix" dipakai supaya cache SELALU disimpan ulang di
+      # akhir run (makin lengkap) dan tetap bisa dipakai run berikutnya walau
+      # key persis tidak pernah match.
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-deps-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            gradle-deps-${{ runner.os }}-
+
+      - name: Cache Flutter pub packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-cache-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+
+      - name: Cache SDKMAN & Gradle binary
+        id: cache-sdkman
+        uses: actions/cache@v4
+        with:
+          path: ~/.sdkman
+          key: sdkman-gradle89-${{ runner.os }}
+
       - name: Install Gradle
         run: |
-          curl -s "https://get.sdkman.io" | bash
+          if [ "${{ steps.cache-sdkman.outputs.cache-hit }}" = "true" ] && [ -d "$HOME/.sdkman/candidates/gradle/8.9" ]; then
+            echo "✅ SDKMAN + Gradle 8.9 sudah ada di cache, skip download."
+          else
+            curl -s "https://get.sdkman.io" | bash
+            source "$HOME/.sdkman/bin/sdkman-init.sh"
+            sdk install gradle 8.9
+          fi
           source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install gradle 8.9
           sdk use gradle 8.9
           gradle --version
 
