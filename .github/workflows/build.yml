@@ -480,8 +480,9 @@ jobs:
         run: |
           sed -i "s|URL_PLACEHOLDER|${{ env.url }}|g" project/app/src/main/java/com/web2apk/app/MainActivity.java
           sed -i "s|<string name=\"app_name\">.*</string>|<string name=\"app_name\">${{ env.app_name }}</string>|g" project/app/src/main/res/values/strings.xml
-          if [ ! -f build-assets/icon.png ] || ! file build-assets/icon.png | grep -q PNG; then
+          if [ ! -f build-assets/icon.png ] || ! identify build-assets/icon.png >/dev/null 2>&1; then
             echo "⚠️ Icon tidak valid, membuat default..."
+            mkdir -p build-assets
             convert -size 512x512 xc:blue build-assets/icon.png
           fi
           mkdir -p project/app/src/main/res/mipmap-hdpi project/app/src/main/res/mipmap-mdpi project/app/src/main/res/mipmap-xhdpi project/app/src/main/res/mipmap-xxhdpi project/app/src/main/res/mipmap-xxxhdpi
@@ -550,12 +551,17 @@ jobs:
           cd flutter-project
           mkdir -p android/app/src/main/res
 
-          # Cek apakah ada icon di build-assets (dari repo)
-          if [ -f ../build-assets/icon.png ] && file ../build-assets/icon.png | grep -q PNG; then
+          # Cek apakah ada icon di build-assets (dari repo). Dicek pakai
+          # ImageMagick "identify" (bukan cuma `file | grep PNG`) supaya
+          # foto yang dikirim user via Telegram (biasanya otomatis
+          # dikompres jadi JPEG oleh Telegram walau nama filenya .png)
+          # tetap dianggap valid dan tidak jatuh ke fallback biru.
+          if [ -f ../build-assets/icon.png ] && identify ../build-assets/icon.png >/dev/null 2>&1; then
             echo "✅ Menggunakan icon dari build-assets/icon.png"
             ICON_SRC="../build-assets/icon.png"
           else
             echo "⚠️ Icon tidak ditemukan atau tidak valid, membuat default biru..."
+            mkdir -p ../build-assets
             convert -size 512x512 xc:blue ../build-assets/icon.png
             ICON_SRC="../build-assets/icon.png"
           fi
