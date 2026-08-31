@@ -589,6 +589,54 @@ jobs:
             echo "ℹ️ Tidak ada icon custom (skip) — icon default project Flutter tetap dipakai apa adanya, tidak ada file yang diubah."
           fi
 
+      # STEP: Ganti nama aplikasi Flutter (HANYA kalau user kirim nama, bukan skip)
+      - name: Set Flutter app name (AndroidManifest.xml)
+        if: env.type == 'flutter' && env.app_name != 'null' && env.app_name != ''
+        env:
+          APP_NAME: ${{ env.app_name }}
+        run: |
+          cd flutter-project
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+
+          if [ ! -f "$MANIFEST" ]; then
+            echo "⚠️ AndroidManifest.xml tidak ditemukan, skip ganti nama aplikasi."
+          elif grep -q 'android:label="@string/app_name"' "$MANIFEST"; then
+            # Nama aplikasi mengacu ke strings.xml, bukan hardcoded di manifest
+            STRINGS="android/app/src/main/res/values/strings.xml"
+            mkdir -p "$(dirname "$STRINGS")"
+            if [ -f "$STRINGS" ] && grep -q '<string name="app_name">' "$STRINGS"; then
+              python3 - "$STRINGS" "$APP_NAME" <<'PYEOF'
+          import re, sys, xml.sax.saxutils as sx
+          path, name = sys.argv[1], sys.argv[2]
+          content = open(path, encoding="utf-8").read()
+          escaped = sx.escape(name)
+          content = re.sub(r'(<string name="app_name">).*?(</string>)', r'\g<1>' + escaped + r'\g<2>', content, count=1)
+          open(path, "w", encoding="utf-8").write(content)
+          PYEOF
+            else
+              python3 - "$STRINGS" "$APP_NAME" <<'PYEOF'
+          import sys, xml.sax.saxutils as sx
+          path, name = sys.argv[1], sys.argv[2]
+          escaped = sx.escape(name)
+          open(path, "w", encoding="utf-8").write(
+              '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <string name="app_name">' + escaped + '</string>\n</resources>\n'
+          )
+          PYEOF
+            fi
+            echo "✅ Nama aplikasi (strings.xml) diganti jadi: $APP_NAME"
+          else
+            # Nama aplikasi hardcoded langsung di attribute android:label
+            python3 - "$MANIFEST" "$APP_NAME" <<'PYEOF'
+          import re, sys, xml.sax.saxutils as sx
+          path, name = sys.argv[1], sys.argv[2]
+          content = open(path, encoding="utf-8").read()
+          escaped = sx.escape(name, {'"': "&quot;"})
+          content = re.sub(r'android:label="[^"]*"', 'android:label="' + escaped + '"', content, count=1)
+          open(path, "w", encoding="utf-8").write(content)
+          PYEOF
+            echo "✅ Nama aplikasi (AndroidManifest.xml) diganti jadi: $APP_NAME"
+          fi
+
       - name: Fix Flutter Android configuration (compileSdk 36 & signing)
         if: env.type == 'flutter'
         run: |
