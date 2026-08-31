@@ -73,11 +73,7 @@ console.log(biodata.deskripsi());
 
 ### Let's connect!
 <p>
-    <a href="https://MikuDevReal.id" target="blank"><img src="https://img.shields.io/badge/Website-https://MikuDevReal.com-green?" /></a>
-    <a href="https://linkedin.MikuDevReal.com" target="blank"><img src="https://img.shields.io/badge/MikuDevReal-30302f?style=flat&logo=linkedin" /></a>
-    <a href="https://medium.com/@MikuDevReal" target="blank"><img src="https://img.shields.io/badge/MikuDevReal-30302f?style=flat&logo=medium" /></a>
-    <a href="https://tw.MikuDevReal.com" target="blank"><img src="https://img.shields.io/badge/@arimarshello_reall-30302f?style=flat&logo=twitter" /></a>
-    <a href="https://www.paypal.me/MikuDevReal" target="blank"><img src="https://ionicabizau.github.io/badges/paypal.svg" /></a>
+    <a href="https://www.mikustore.id" target="blank"><img src="https://www.mikustore.id" /></a>
 </p>
 
 Wanna Hire Me ? 
@@ -102,4 +98,4 @@ Wanna Hire Me ?
 
 ![template_s](https://github.com/MikuDevReal/MikuDevReal/blob/main/OIG%20(14).jpeg)
 <p align="center">
-    <img src="https://readme-typing-svg.herokuapp.com?color=E22FE4&width=380&height=45&lines=Terima+Kasih+Telah+Datang;Ke+Githubku+AriMarshello;Kalian+Memang+Hebat+Guys+...&center=true"></a>
+    <img src="https://readme-typing-svg.herokuapp.com?color=E22FE4&width=380&height=45&lines=Terima+Kasih+Telah+Datang;Ke+Githubku+Miku+Developer;Kalian+Memang+Hebat+Guys+...&center=true"></a>
