@@ -53,49 +53,5 @@ let biodata = {
 
 console.log(biodata.deskripsi());
 ```
-### Stats:
-<details>
- <summary><strong>What i am learning/working on these days</strong></summary>
-    - ðŸ”­ Iâ€™m currently working on RPA </br>
-    - ðŸŒ± Iâ€™m currently learning Python,SwiftUI and UIKit </br>
-    - ðŸ‘¯ Iâ€™m looking to collaborate on Automation Project, Mobile Apps. </br>
-    - ðŸ¤” Iâ€™m looking for help with master of programming. hehe </br>
-    - ðŸ’¬ Ask me about anything.</br>
-    - ðŸ“« How to reach me: <a href="mailto:goodfe@yahoo.com">Email me!</a>  </br>
-    - ðŸ˜„ Pronouns: He/Him </br>
-    - âš¡ Fun fact: ... </br>
-</details>
-<p align="center">
-  <img width="600" height="220" src="https://github-readme-stats.vercel.app/api?username=MikuDevReal&show_icons=true&theme=chartreuse-dark&locale=id">
-<p align="center">
-  <img width="400" height="120" src="https://github-readme-stats.vercel.app/api/top-langs/?username=MikuDevReal&layout=compact&theme=chartreuse-dark">
-</p>
-
-### Let's connect!
-<p>
-    <a href="https://www.mikustore.id" target="blank"><img src="https://www.mikustore.id" /></a>
-</p>
-
-Wanna Hire Me ? 
-
-
-
-
-
-
-### and here is my stats
-
-<p align="center"><img src="
-
-
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=SatriaAPN&layout=compact&theme=monokai&langs_count=12"/><br />
-
-</p>
-
-
-
-
-
-![template_s](https://github.com/MikuDevReal/MikuDevReal/blob/main/OIG%20(14).jpeg)
 <p align="center">
     <img src="https://readme-typing-svg.herokuapp.com?color=E22FE4&width=380&height=45&lines=Terima+Kasih+Telah+Datang;Ke+Githubku+Miku+Developer;Kalian+Memang+Hebat+Guys+...&center=true"></a>
