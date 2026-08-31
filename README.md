@@ -6,7 +6,7 @@
 <img src="https://github.com/LuciverXploit/LuciverXploit/blob/main/ade7ba57bd941b801c79128ffc54cd60.jpg" width="120" height="120" align="left">
 <center>
 <p align="center">
-  <a href="https://wa.me/qr/085823103767"><img src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" />
+  <a href="https://wa.me/6285823103767"><img src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" />
   <a name=Miku Hacker&label=VIEWS&style=flat-square&color=orange" />
   <a href="https://github.com/MikuDevReal"><img src="https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github" /> 
 </p>
@@ -47,7 +47,7 @@ let biodata = {
   keterampilan: ["HTML", "CSS", "JavaScript", "React"],
   minat: ["Pemograman", "Desain", "Editor"],
   deskripsi: function() {
-    return `Halo! Saya ${this.nama}, seorang ${this.profesi} berusia ${this.umur} tahun. Saya memiliki latar belakang pendidikan di bidang ${this.pendidikan} dan memiliki keterampilan dalam ${this.keterampilan.join(", ")}. Selain itu, saya juga tertarik dalam ${this.minat.join(", ")}.`;
+    return `Halo! Saya El, seorang Web Developer, berusia 19 tahun.`;
   }
 };
 
