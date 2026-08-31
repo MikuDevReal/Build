@@ -544,47 +544,50 @@ jobs:
             exit 1
           fi
 
-      # STEP BARU: Generate icon untuk Flutter
+      # STEP: Generate icon untuk Flutter (HANYA kalau user upload icon custom)
       - name: Generate Flutter app icons
         if: env.type == 'flutter'
         run: |
           cd flutter-project
-          mkdir -p android/app/src/main/res
 
-          # Cek apakah ada icon di build-assets (dari repo). Dicek pakai
-          # ImageMagick "identify" (bukan cuma `file | grep PNG`) supaya
-          # foto yang dikirim user via Telegram (biasanya otomatis
+          # Cek apakah ada icon custom yang VALID di build-assets. Dicek
+          # pakai ImageMagick "identify" (bukan cuma `file | grep PNG`)
+          # supaya foto yang dikirim user via Telegram (biasanya otomatis
           # dikompres jadi JPEG oleh Telegram walau nama filenya .png)
-          # tetap dianggap valid dan tidak jatuh ke fallback biru.
+          # tetap dianggap valid.
+          #
+          # PENTING: kalau user SKIP (icon.png cuma berisi placeholder teks
+          # "no-custom-icon" yang dikirim server.js), JANGAN generate/timpa
+          # apa pun di sini. Sebelumnya branch "tidak valid" malah bikin
+          # kotak solid warna biru (convert -size 512x512 xc:blue) lalu
+          # menimpa ic_launcher.png ASLI bawaan project Flutter — itulah
+          # penyebab logo app jadi warna ungu/polos saat icon di-skip.
+          # Sekarang kalau tidak ada icon custom valid, langkah ini
+          # dilewati total supaya icon asli dari project (zip) yang dipakai.
           if [ -f ../build-assets/icon.png ] && identify ../build-assets/icon.png >/dev/null 2>&1; then
-            echo "✅ Menggunakan icon dari build-assets/icon.png"
+            echo "✅ Menggunakan icon custom dari build-assets/icon.png"
             ICON_SRC="../build-assets/icon.png"
+
+            for dir in mipmap-hdpi mipmap-mdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+              mkdir -p android/app/src/main/res/$dir
+            done
+
+            convert $ICON_SRC -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+            convert $ICON_SRC -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+            convert $ICON_SRC -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+            convert $ICON_SRC -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+            convert $ICON_SRC -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+            cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+            cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+            cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+            cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+            cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+
+            echo "✅ Icon custom Flutter berhasil digenerate"
           else
-            echo "⚠️ Icon tidak ditemukan atau tidak valid, membuat default biru..."
-            mkdir -p ../build-assets
-            convert -size 512x512 xc:blue ../build-assets/icon.png
-            ICON_SRC="../build-assets/icon.png"
+            echo "ℹ️ Tidak ada icon custom (skip) — icon default project Flutter tetap dipakai apa adanya, tidak ada file yang diubah."
           fi
-
-          # Generate semua ukuran icon ke folder mipmap
-          for dir in mipmap-hdpi mipmap-mdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
-            mkdir -p android/app/src/main/res/$dir
-          done
-
-          convert $ICON_SRC -resize 72x72 android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-          convert $ICON_SRC -resize 48x48 android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-          convert $ICON_SRC -resize 96x96 android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-          convert $ICON_SRC -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-          convert $ICON_SRC -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-
-          # Buat round icon (copy saja)
-          cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-          cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-
-          echo "✅ Icons Flutter berhasil digenerate"
 
       - name: Fix Flutter Android configuration (compileSdk 36 & signing)
         if: env.type == 'flutter'
