@@ -41,10 +41,44 @@ jobs:
           dart --version
           java -version
 
-      # Catatan: project ini HARUS sudah lengkap di repo -
-      # pubspec.yaml + folder lib/ + folder android/ (bukan cuma sisa file Android).
-      # Tidak ada lagi "flutter create" ulang di sini karena itu menghapus
-      # seluruh kode Dart/Miku AI yang sudah ada.
+      # Repo hanya menyimpan "flutter-project.zip" (project Flutter lengkap:
+      # pubspec.yaml + lib/ + android/). Langkah ini membersihkan sisa file
+      # lama di root lalu mengekstrak project yang sebenarnya sebelum build,
+      # supaya tidak ada file nyangkut dari percobaan sebelumnya.
+      - name: Clean workspace & extract project
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP_FILE="flutter-project.zip"
+
+          if [ ! -f "$ZIP_FILE" ]; then
+            echo "❌ $ZIP_FILE tidak ditemukan di root repo."
+            echo "Upload file zip project Flutter lengkap dengan nama persis: $ZIP_FILE"
+            exit 1
+          fi
+
+          mkdir -p /tmp/extract
+          unzip -oq "$ZIP_FILE" -d /tmp/extract
+
+          # Hapus semua isi root repo KECUALI .github dan .git, supaya sisa
+          # file lama (android/ parsial, build-config.json, dst) tidak ikut kebawa.
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name '.github' \
+            ! -name '.git' \
+            ! -name "$ZIP_FILE" \
+            -exec rm -rf {} +
+
+          # zip biasanya punya satu folder pembungkus (mis. miku_ai/) -
+          # ambil isinya, bukan foldernya, supaya pubspec.yaml jadi ada di root.
+          SRC_DIR=$(find /tmp/extract -mindepth 1 -maxdepth 1 -type d | head -n1)
+          if [ -z "$SRC_DIR" ]; then
+            SRC_DIR=/tmp/extract
+          fi
+          cp -R "$SRC_DIR"/. .
+
+          echo "=== Isi root repo setelah extract ==="
+          ls -la
+
       - name: Get Flutter dependencies
         run: flutter pub get
 
