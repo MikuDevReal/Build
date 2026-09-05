@@ -19,32 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: gradle
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Show tool versions
-        run: |
-          flutter --version
-          dart --version
-          java -version
-
-      # Repo hanya menyimpan "flutter-project.zip" (project Flutter lengkap:
-      # pubspec.yaml + lib/ + android/). Langkah ini membersihkan sisa file
-      # lama di root lalu mengekstrak project yang sebenarnya sebelum build,
-      # supaya tidak ada file nyangkut dari percobaan sebelumnya.
+      # Dipindah ke paling awal (sebelum Setup JDK) karena langkah cache
+      # gradle di setup-java butuh file gradle sudah ada di repo -
+      # dan file itu baru muncul setelah zip project di-extract di sini.
       - name: Clean workspace & extract project
         shell: bash
         run: |
@@ -78,6 +55,28 @@ jobs:
 
           echo "=== Isi root repo setelah extract ==="
           ls -la
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show tool versions
+        run: |
+          flutter --version
+          dart --version
+          java -version
 
       - name: Get Flutter dependencies
         run: flutter pub get
